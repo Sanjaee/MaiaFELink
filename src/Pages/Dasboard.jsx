@@ -1,11 +1,10 @@
 import Cookies from "js-cookie";
 import Navbar from "../components/Navbar";
 import { useLogin } from "../actions/useLogin";
-import { useVerify } from "../actions/useVerify";
 
 const Dashboard = () => {
   useLogin();
-  useVerify();
+
   const handleLogout = () => {
     Cookies.remove("token");
     window.location.href = "/";
