@@ -11,7 +11,7 @@ const VerifyEmail = () => {
     const verifyToken = async () => {
       try {
         const response = await axios.post(
-          `https://maia-b-elink.vercel.app/auth/verify/${token}`
+          `${import.meta.env.VITE_BACKEND_URL}/auth/verify/${token}`
         );
         setVerificationStatus(response.data.message);
         Cookies.set("token", response.data.token, { expires: 7 });

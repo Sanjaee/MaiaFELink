@@ -6,20 +6,20 @@ import Navbar from "../components/Navbar";
 
 const FormRegister = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [username, setusername] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isEmail, setIsEmail] = useState(false);
   const [isContains, setIsContains] = useState(false);
   const [isIncludes, setIsIncludes] = useState(false);
   const [isContainsNumbers, setIsContainsNumbers] = useState(false);
-  const [issymbols, setIssymbols] = useState(false);
+  const [isSymbols, setIsSymbols] = useState(false);
 
   const registerUser = async () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        import.meta.env.VITE_BACKEND_URL + "/auth/register",
+        `${import.meta.env.VITE_BACKEND_URL}/auth/register`,
         {
           username: username,
           email: email,
@@ -27,21 +27,21 @@ const FormRegister = () => {
         }
       );
       Cookies.set("email", email, { expires: 7 });
+      Cookies.set("username", username, { expires: 7 });
 
-      // Jika berhasil, lanjutkan dengan halaman berikutnya atau tampilkan pesan sukses
-
+      // If successful, redirect to the validation page or show a success message
       window.location.href = "/validasi";
     } catch (error) {
-      // Jika gagal, tangani kesalahan
-      if (error.response.status === 400) {
-        // Email sudah ada dalam database, tampilkan pesan kesalahan
+      // Handle errors
+      if (error.response && error.response.status === 400) {
+        // Email already exists in the database, show an error message
         setIsEmail(true);
       } else {
-        // Tangani kesalahan lainnya
+        // Handle other errors
         console.error("Error:", error);
       }
     } finally {
-      setIsLoading(false); // Set isLoading false setelah proses pendaftaran selesai
+      setIsLoading(false); // Set isLoading to false after the registration process is completed
     }
   };
 
@@ -49,10 +49,10 @@ const FormRegister = () => {
     event.preventDefault();
 
     if (username === "" || email === "" || password === "") {
-      // Jika email atau password kosong, jangan melanjutkan pendaftaran
+      // If username, email, or password is empty, do not proceed with registration
       return;
     }
-    // Memanggil fungsi registerUser
+    // Call the registerUser function
     await registerUser();
   };
 
@@ -62,7 +62,7 @@ const FormRegister = () => {
     setIsContains(newPassword.length >= 8);
     setIsIncludes(/[a-z]/.test(newPassword) && /[A-Z]/.test(newPassword));
     setIsContainsNumbers(/\d/.test(newPassword));
-    setIssymbols(/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(newPassword));
+    setIsSymbols(/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(newPassword));
   };
 
   return (
@@ -70,7 +70,7 @@ const FormRegister = () => {
       <Navbar>
         <div className="flex items-center gap-3">
           <Link
-            className="px-2 py-2 text-[14px] rounded-[4px] text-[#000000] font-bold "
+            className="px-2 py-2 text-[14px] rounded-[4px] text-[#000000] font-bold"
             to={"/"}
           >
             Log In
@@ -86,7 +86,7 @@ const FormRegister = () => {
 
       <div className="flex items-center justify-center px-4">
         <form
-          className="flex flex-col justify-end w-[400px]    "
+          className="flex flex-col justify-end w-[400px]"
           onSubmit={handleRegister}
         >
           <h1 className="text-[24px] text-[#2F2F2F] font-semibold mt-20">
@@ -101,15 +101,15 @@ const FormRegister = () => {
             </label>
             <input
               value={username}
-              onChange={(e) => setusername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               type="text"
-              className=" px-3 font-semibold rounded-lg bg-[#FFFFFF] focus:outline-none max-w-[400px] h-[40px] border-[#CBD5E1] "
+              className="px-3 font-semibold rounded-lg bg-[#FFFFFF] focus:outline-none max-w-[400px] h-[40px] border-[#CBD5E1]"
               placeholder="Your Name"
             />
           </div>
           <div className="flex flex-col mt-6">
             <label
-              htmlFor="username"
+              htmlFor="email"
               className="text-[14px] mb-1 text-[#2F2F2F] font-semibold"
             >
               Email Address
@@ -117,8 +117,8 @@ const FormRegister = () => {
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              type="text"
-              className=" px-3 font-semibold rounded-lg bg-[#FFFFFF] focus:outline-none max-w-[400px] h-[40px] border-[#CBD5E1] "
+              type="email"
+              className="px-3 font-semibold rounded-lg bg-[#FFFFFF] focus:outline-none max-w-[400px] h-[40px] border-[#CBD5E1]"
               placeholder="Email"
             />
           </div>
@@ -134,7 +134,7 @@ const FormRegister = () => {
 
           <div className="flex flex-col mt-6">
             <label
-              htmlFor="username"
+              htmlFor="password"
               className="text-[14px] mb-1 text-[#2F2F2F] font-semibold"
             >
               Create Password
@@ -143,19 +143,19 @@ const FormRegister = () => {
               value={password}
               onChange={handlePasswordChange}
               type="text"
-              className=" px-3 font-semibold rounded-lg bg-[#FFFFFF] focus:outline-none max-w-[400px] h-[40px] border-[#CBD5E1] "
+              className="px-3 font-semibold rounded-lg bg-[#FFFFFF] focus:outline-none max-w-[400px] h-[40px] border-[#CBD5E1]"
               placeholder="Password"
             />
           </div>
 
           <div
             className={`mt-6 py-3 pl-3 pr-7 rounded max-w-[400px] w-full ${
-              !issymbols || !isContains || !isIncludes || !isContainsNumbers
+              !isSymbols || !isContains || !isIncludes || !isContainsNumbers
                 ? "bg-[#FFF5F5]"
-                : "bg-[#FFFFFF] "
-            } `}
+                : "bg-[#FFFFFF]"
+            }`}
           >
-            <div className="flex items-center ">
+            <div className="flex items-center">
               {isContains ? (
                 <img className="w-[15px]" src="Vector.png" alt="" />
               ) : (
@@ -165,7 +165,7 @@ const FormRegister = () => {
                 Contains at least 8 characters
               </p>
             </div>
-            <div className="flex items-center ">
+            <div className="flex items-center">
               {isIncludes ? (
                 <img className="w-[15px]" src="Vector.png" alt="" />
               ) : (
@@ -175,7 +175,7 @@ const FormRegister = () => {
                 Includes both uppercase and lowercase letters
               </p>
             </div>
-            <div className="flex items-center ">
+            <div className="flex items-center">
               {isContainsNumbers ? (
                 <img className="w-[15px]" src="Vector.png" alt="" />
               ) : (
@@ -185,8 +185,8 @@ const FormRegister = () => {
                 Contains numbers (e.g., 1, 2, 3)
               </p>
             </div>
-            <div className="flex items-center ">
-              {issymbols ? (
+            <div className="flex items-center">
+              {isSymbols ? (
                 <img className="w-[15px]" src="Vector.png" alt="" />
               ) : (
                 <span className="w-[16px] h-[16px] bg-[#FFF5F5] rounded-full border-2 border-[#CBD5E1]"></span>
@@ -211,10 +211,10 @@ const FormRegister = () => {
             </span>
           </p>
 
-          <p className="mb-10  text-center text-[14px] text-[#2F2F2F] mt-6 font-semibold">
+          <p className="mb-10 text-center text-[14px] text-[#2F2F2F] mt-6 font-semibold">
             Already have an account?{" "}
             <Link className="underline" to={"/"}>
-              Sign Up
+              Sign In
             </Link>
           </p>
         </form>

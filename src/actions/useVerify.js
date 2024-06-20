@@ -1,10 +1,9 @@
-import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { useCookies } from "react-cookie";
 
 export const useVerify = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-  const decode = jwtDecode(cookies.token);
+  const decode = Cookies.get("token");
   const verify = decode.isVerified;
 
   useEffect(() => {
